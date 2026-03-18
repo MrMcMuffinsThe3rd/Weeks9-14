@@ -14,12 +14,14 @@ public class Grower : MonoBehaviour
         appleTransform.localScale = Vector2.zero;
 
         //these two lines belong to Waiting for Coroutine
-        StartCoroutine(GrowTree());
-        StartCoroutine(GrowApple());
+        //StartCoroutine(GrowTree());
+        //StartCoroutine(GrowApple()); //removing this so it only runs GrowApple coroutine after GrowTree (see code below)
 
         //StartCoroutine(GrowTree()); //this is how you call a function with an IEnumerator return type
         //you can no longer just say "GrowTree();" to call the function anymore
         // if you just said "GrowTree();" it'll just call it like a regular function before we added IEnumerator
+
+        StartTreeGrowing(); //to use the IEnumerator StartTheGrowing
     }
 
     // Update is called once per frame
@@ -37,8 +39,20 @@ public class Grower : MonoBehaviour
         //StartCoroutine(GrowTree());
 
         //these two lines belong to Waiting for Coroutine
-        StartCoroutine(GrowTree());
-        StartCoroutine(GrowApple());
+        //StartCoroutine(GrowTree());
+        //StartCoroutine(GrowApple()); //instead of calling this line here (bec it makes it so the apple grows with the tree)
+                                        //(we dont want that we want it so that the tree grows then the apple)    
+
+        StartCoroutine(StartTheGrowing());
+    }
+
+    //this is another way to make the tree grow before growung the apple
+    IEnumerator StartTheGrowing()
+    {
+        yield return StartCoroutine(GrowTree());
+        yield return StartCoroutine(GrowApple());
+
+        //it's also easier to just do the previous two lines but add yield return new WaitForSeconds() instead of this mess
     }
 
     IEnumerator GrowTree()
@@ -105,6 +119,12 @@ public class Grower : MonoBehaviour
 
         //    yield return null; 
         //}
+
+
+        //StartCoroutine(GrowApple()); //we run this code at the end of the GrowTree coroutine instead of together with GrowTree at Start
+                                    //this makes it so the GrowTree coroutine finishes running first then it starts the coroutine for GrowApple
+                                    //which will give us the effect we want (grow tree then grow apple)
+
     }
 
     //here we are trying to do what we did in GrowTree where everything was happening in the same coroutine
