@@ -5,15 +5,21 @@ public class Grower : MonoBehaviour
 {
     public Transform treeTransform;
     public Transform appleTransform;
+    public float appleDelay = 1f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         //makes sure the scale of the tree is set to zero at the begining of the game
         treeTransform.localScale = Vector2.zero;
+        appleTransform.localScale = Vector2.zero;
+
+        //these two lines belong to Waiting for Coroutine
+        StartCoroutine(GrowTree());
+        StartCoroutine(GrowApple());
 
         //StartCoroutine(GrowTree()); //this is how you call a function with an IEnumerator return type
-                                    //you can no longer just say "GrowTree();" to call the function anymore
-                                    // if you just said "GrowTree();" it'll just call it like a regular function before we added IEnumerator
+        //you can no longer just say "GrowTree();" to call the function anymore
+        // if you just said "GrowTree();" it'll just call it like a regular function before we added IEnumerator
     }
 
     // Update is called once per frame
@@ -28,7 +34,11 @@ public class Grower : MonoBehaviour
         //Which is why we created this seperate public function where we put the StartCoroutine(GrowTree()); command in it
         //that way, we can call this public function from the button like usual
 
+        //StartCoroutine(GrowTree());
+
+        //these two lines belong to Waiting for Coroutine
         StartCoroutine(GrowTree());
+        StartCoroutine(GrowApple());
     }
 
     IEnumerator GrowTree()
@@ -41,14 +51,19 @@ public class Grower : MonoBehaviour
         //NOTE: you have to be using System.Collections at the top to not get an error under IEnumerator
         float t = 0; //assign time variable
 
+        //makes sure the tree and the apple scales are set to zero when this function is called again
+        treeTransform.localScale = Vector2.zero;
+        appleTransform.localScale = Vector2.zero; 
+
         while (t < 1)
         {
             t += Time.deltaTime;
-            treeTransform.localScale = Vector2.one * t;
+            treeTransform.localScale = Vector2.one * t; //you can use an animation curve here, instead of multiplying by t, you multiply by curve
 
             yield return null; //this return statement is the equivalent to saying:
                                //"I don't want you to touch the loop. Hold on looping the next loop until the next frame runs and so on and so forth"
         }   //"null" just means that the while loop doesn't return a *value* (as in, float, bool, int, string, etc), it just makes it so the loop come back next frame
+        //we can also say new WaitForSeconds() instead of null here to set a timer for the tree to be fully grown
 
 
 
@@ -67,7 +82,11 @@ public class Grower : MonoBehaviour
         //treeTransform.localScale = Vector2.one * t;
 
 
-        //this code is to make the apple grow
+        //yield return new WaitForSeconds(appleDelay); //this code means "come back after this amount of time has passed" then run the code after this
+                                                    // basically saying skip all the frames that will run in this given amount of time
+
+
+        //this code below is to make the apple grow
         //notice how we're setting t = 0 right after our first while loop and before our second
         //why is that? won't that mess up our IEnumerator for the first loop?
         //the answer to that is No, it will not
@@ -77,14 +96,32 @@ public class Grower : MonoBehaviour
         //then once it's done with that loop, it leaves it and DOES NOT go back to the begining code before that loop. That part is done now until everything in the function has ran
         //it then runs the code before the next while loop (t = 0) then runs that while loop every frame till it's done with it and so on and so forth
        
-        t = 0; //NOTE: if we placed this line of code after the yield return statement of the first while loop, it'll just create a loop that never ends. We do not want that
+        //t = 0; //NOTE: if we placed this line of code after the yield return statement of the first while loop, it'll just create a loop that never ends. We do not want that
+
+        //while (t < 1)
+        //{
+        //    t += Time.deltaTime;
+        //    appleTransform.localScale = Vector2.one * t;
+
+        //    yield return null; 
+        //}
+    }
+
+    //here we are trying to do what we did in GrowTree where everything was happening in the same coroutine
+    //we want to seperate them now but currently, they grow at the same time and the apple doesn't wait for the tree
+    //like when they were both in the same coroutine
+    IEnumerator GrowApple()
+    {
+        float t = 0;
+
+        appleTransform.localScale = Vector2.zero;
 
         while (t < 1)
         {
             t += Time.deltaTime;
             appleTransform.localScale = Vector2.one * t;
 
-            yield return null; 
+            yield return null;
         }
     }
 }
