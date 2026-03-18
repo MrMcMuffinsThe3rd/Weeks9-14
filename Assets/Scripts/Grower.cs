@@ -6,6 +6,13 @@ public class Grower : MonoBehaviour
     public Transform treeTransform;
     public Transform appleTransform;
     public float appleDelay = 1f;
+
+    Coroutine theTreeCoroutine; //creates a coroutine variable
+    //(a variable that takes a coroutine)
+
+    Coroutine theAppleCoroutine;
+    Coroutine theGrowingCoroutine;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -41,16 +48,65 @@ public class Grower : MonoBehaviour
         //these two lines belong to Waiting for Coroutine
         //StartCoroutine(GrowTree());
         //StartCoroutine(GrowApple()); //instead of calling this line here (bec it makes it so the apple grows with the tree)
-                                        //(we dont want that we want it so that the tree grows then the apple)    
+        //(we dont want that we want it so that the tree grows then the apple)    
 
-        StartCoroutine(StartTheGrowing());
+
+        // //checks if the coroutine variable is not null (as in, it's not been assigned a coroutine yet)
+        // //if yes: stop the coroutine that is running in the coroutine variable
+        // if(theTreeCoroutine != null)
+        // {
+        //     StopCoroutine(theTreeCoroutine);
+        // }
+
+        // //if no: set the coroutine variable to a coroutine
+        //theTreeCoroutine = StartCoroutine(StartTheGrowing());
+        // //the previous block of code only stops the tree coroutine from running but not the apple's
+        // //we want them both to stop so lets see how to do that:
+
+        //we're gonna use the same if statement just different variables
+        //this "theGrowingCoroutine" variable starts the "StartTheGrowing" coroutine
+        if (theGrowingCoroutine != null)
+        {
+            //if theGrowingCoroutine variable is assigned a value
+            //stop that coroutine
+            StopCoroutine(theGrowingCoroutine);
+        }
+
+        //but before reassigning theGrowingCoroutine variable
+        //check if theTreeCoroutine variable is assigned a value
+        if (theTreeCoroutine != null)
+        {
+            //if it is assigned a value
+            //stop that coroutine
+            StopCoroutine(theTreeCoroutine);
+        }
+
+        //before reassigning theGrowingCoroutine variable we still need to check for the apple coroutine
+        //check if theAppleCoroutine variable is assigned a value
+        if(theAppleCoroutine != null)
+        {
+            //if it is assigned a value
+            //stop that coroutine
+            StopCoroutine(theAppleCoroutine);
+        }
+
+        //then finally, reassign theGrowingCoroutine variable
+         theGrowingCoroutine = StartCoroutine(StartTheGrowing());
+
+        //but we're not done yet, we need to reassign theTreeCoroutine and theAppleCoroutine variables
+        //(go to StartTheGrowing coroutine)
     }
 
     //this is another way to make the tree grow before growung the apple
     IEnumerator StartTheGrowing()
     {
-        yield return StartCoroutine(GrowTree());
-        yield return StartCoroutine(GrowApple());
+        //yield return StartCoroutine(GrowTree());
+        //yield return StartCoroutine(GrowApple());
+
+        //instead of the previous two lines, we want to reassign theTreeCoroutine and theAppleCoroutine variables to their respective coroutines
+        //so we can do:
+        yield return theTreeCoroutine = StartCoroutine(GrowTree());
+        yield return theAppleCoroutine = StartCoroutine(GrowApple());
 
         //it's also easier to just do the previous two lines but add yield return new WaitForSeconds() instead of this mess
     }
