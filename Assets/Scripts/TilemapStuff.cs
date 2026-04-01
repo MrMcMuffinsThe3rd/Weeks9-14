@@ -34,7 +34,7 @@ public class TilemapStuff : MonoBehaviour
         {
             Debug.Log(tilemap.GetTile(cellPos));
             tilemap.SetTile(cellPos, flower);
-            impulseSource.
+            impulseSource.GenerateImpulse();
         }
     }
 }
