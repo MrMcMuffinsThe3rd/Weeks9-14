@@ -11,6 +11,8 @@ public class PlayerControllerInput : MonoBehaviour
     public bool gunShot = false;
     public AudioSource gunShotSFX;
 
+    public Animator playerAnimation;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -21,7 +23,7 @@ public class PlayerControllerInput : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        playerAnimation.Play("idle");
     }
 
     public void OnPoint(InputAction.CallbackContext context)
@@ -40,10 +42,11 @@ public class PlayerControllerInput : MonoBehaviour
 
     public void OnAttack(InputAction.CallbackContext context)
     {
-        if (context.started)
+        if (context.performed == true)
         {
             Debug.Log("POWWW");
             gunShotSFX.Play();
+            playerAnimation.Play("shootingGun");
         }
     }
 }
