@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,6 +7,9 @@ public class PlayerControllerInput : MonoBehaviour
     public float speed = 5;
     public Vector2 movement;
     public Vector2 position;
+
+    public bool gunShot = false;
+    public AudioSource gunShotSFX;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -20,12 +24,6 @@ public class PlayerControllerInput : MonoBehaviour
 
     }
 
-    public void OnMove(InputAction.CallbackContext context) //"On" is a keyword for player events
-    {
-        movement = context.ReadValue<Vector2>(); //we want it to read a vector2 so thats why we wrote it like that (it'll give an error otherwise)
-    }
-
-
     public void OnPoint(InputAction.CallbackContext context)
     {
         //movement.x = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue()).x;
@@ -38,5 +36,14 @@ public class PlayerControllerInput : MonoBehaviour
         transform.position = position;
 
         movement = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());
+    }
+
+    public void OnAttack(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            Debug.Log("POWWW");
+            gunShotSFX.Play();
+        }
     }
 }
