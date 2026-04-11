@@ -241,7 +241,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GhostSpawner
   ghostPrefabs: {fileID: 4279986581677282281, guid: 4b4a427761517f44586c8b034f3b091c, type: 3}
   spawnedGhostsList: []
-  waitTime: 3
+  waitTime: 5
   spawnPoint: {x: 0, y: 0}
   ghostTransform: {fileID: 300885823}
   timer: 0

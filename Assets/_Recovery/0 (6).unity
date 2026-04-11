@@ -246,6 +246,7 @@ MonoBehaviour:
   ghostTransform: {fileID: 300885823}
   timer: 0
   t: 0
+  speed: 0
 --- !u!4 &300885823
 Transform:
   m_ObjectHideFlags: 0
