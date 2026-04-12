@@ -139,7 +139,7 @@ public class GhostSpawner : MonoBehaviour
 
     IEnumerator DespawnGhosts()
     {
-        if (ghostTransform.transform.position.y < -6)
+        if (ghostTransform.transform.localScale.y > 5)
         {
             Debug.Log("Despawning....");
 
