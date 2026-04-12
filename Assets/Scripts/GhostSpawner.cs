@@ -50,6 +50,17 @@ public class GhostSpawner : MonoBehaviour
         //Debug.Log("ghostTransform value:" + ghostTransform);
         //Debug.Log("spawnedGhosts value:" + spawnedGhosts);
         //Debug.Log("transform.position.x value:" + spawnPoint.x);
+
+
+        if (spawnedGhostsList.Count > 0)
+        {
+            i = spawnedGhostsList.Count - 1;
+
+        }
+        else if (spawnedGhostsList.Count <= 0)
+        {
+            i = spawnedGhostsList.Count;
+        }
     }
 
     public void StartSpawningGhosts()
