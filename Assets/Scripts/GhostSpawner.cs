@@ -85,7 +85,7 @@ public class GhostSpawner : MonoBehaviour
     {
         t = 0;
 
-        speed = Random.Range(0.3f, 0.5f);
+        speed = Random.Range(0.8f, 1f);
 
         while (t < 8)
         {
@@ -112,6 +112,7 @@ public class GhostSpawner : MonoBehaviour
 
         new WaitForSeconds(waitTime);
 
+        StartCoroutine(DespawnGhosts());
         StartCoroutine(SpawnGhosts());
 
         yield return null;
@@ -120,7 +121,7 @@ public class GhostSpawner : MonoBehaviour
 
     IEnumerator DespawnGhosts()
     {
-        for (int i = spawnedGhostsList.Count - 1; i >= 0; i++)
+        for (int i = spawnedGhostsList.Count - 1; i >= 0; i--)
         {
             GameObject ghost = spawnedGhostsList[i];
             //despawn the ghost that has reached the player
