@@ -22,6 +22,8 @@ public class GhostSpawner : MonoBehaviour
 
     bool spawnGhost = false;
 
+    int i;
+
     public float t = 0;
     public float speed;
 
@@ -29,11 +31,8 @@ public class GhostSpawner : MonoBehaviour
     void Start()
     {
 
-
+        StartCoroutine(MoveGhosts());
         StartCoroutine(SpawnGhosts());
-
-        //StartCoroutine(MoveGhosts());
-
 
         
     }
@@ -60,7 +59,10 @@ public class GhostSpawner : MonoBehaviour
 
     IEnumerator SpawnGhosts()
     {
+        timer = 0;
 
+        while (spawnedGhostsList.Count <= 0 || timer > 2)  
+        {
             //generates a spawn point based on ghostTransform
             ghostTransform.position = spawnPoint;
             spawnPoint.x = Random.Range(8.5f, -8.5f);
@@ -72,63 +74,90 @@ public class GhostSpawner : MonoBehaviour
             //adds spawned ghosts to a list
             spawnedGhostsList.Add(spawnedGhosts);
 
+            speed = Random.Range(0.8f, 1f);
 
+            //sets the spawned invader position to invaderTransform variable position
+            spawnedGhosts.transform.localScale = ghostTransform.localScale;
 
-            StartCoroutine(MoveGhosts());
+            timer = 0;
 
-           //spawnGhost = true;
+            yield return new WaitForSeconds(waitTime);
+        }
 
-        yield return null;
+        StartCoroutine(MoveGhosts());
     }
 
     IEnumerator MoveGhosts()
     {
-        t = 0;
-
-        speed = Random.Range(0.8f, 1f);
-
-        while (t < 8)
+        while (t < 8 || spawnedGhostsList.Count > 0)
         {
-            t += Time.deltaTime;
 
-            //make sure spawned ghost's scale is 1 before making them grow (appraoch player)
-            spawnedGhosts.transform.localScale = Vector2.one;
+            for (int i = spawnedGhostsList.Count - 1; i >= 0; i--)
+            {
+                t += Time.deltaTime;
 
-            //gets the transform of the spawned ghosts and assignes it to ghostTransform variable
-            ghostTransform = spawnedGhosts.GetComponent<Transform>();
+                //creating an instance of ghost object
+                GameObject scaleGhost = spawnedGhostsList[i];
 
-            //sets the spawned ghosts scale to ghostTransform variable scale
-            spawnedGhosts.transform.localScale = ghostTransform.localScale;
+                Vector2 size = scaleGhost.transform.localScale;
 
-            //simulates ghosts approaching player by increasing their scale (using ghostTransform's scale)
-            ghostTransform.localScale = Vector2.one * t * 0.5f;
+                size += Vector2.one * t * speed;
 
-            //reassign transform.scale to the ghost prefab
-            spawnedGhosts.transform.localScale = ghostTransform.localScale;
+                scaleGhost.transform.localScale = size;
 
+                //simulates ghosts approaching player by increasing their scale (using ghostTransform's scale)
+                //scaleGhost.transform.localScale = Vector2.one * t * 0.5f;
 
-            yield return null; //ghosts will take 8 seconds to reach the player before despawning
+                //reassign transform.scale to the ghost prefab transfrom
+                //ghostTransform.localScale = scaleGhost.transform.localScale;
+
+                ////make sure spawned ghost's scale is 1 before making them grow (appraoch player)
+                //spawnedGhosts.transform.localScale = Vector2.one;
+
+                ////gets the transform of the spawned ghosts and assignes it to ghostTransform variable
+                //ghostTransform = spawnedGhosts.GetComponent<Transform>();
+
+                ////sets the spawned ghosts scale to ghostTransform variable scale
+                //spawnedGhosts.transform.localScale = ghostTransform.localScale;
+
+                //ghostTransform.localScale = Vector2.one * t * 0.5f;
+
+                ////reassign transform.scale to the ghost prefab
+                //spawnedGhosts.transform.localScale = ghostTransform.localScale;
+
+                yield return null; //ghosts will take 8 seconds to reach the player before despawning
+
+            }
+
+            t = 0;
+
+            yield return null;
+            yield return null;
         }
-
-        new WaitForSeconds(waitTime);
-
-        StartCoroutine(DespawnGhosts());
-        StartCoroutine(SpawnGhosts());
-
-        yield return null;
 
     }
 
     IEnumerator DespawnGhosts()
     {
-        for (int i = spawnedGhostsList.Count - 1; i >= 0; i--)
+        if (ghostTransform.transform.position.y < -6)
         {
-            GameObject ghost = spawnedGhostsList[i];
-            //despawn the ghost that has reached the player
-            spawnedGhostsList.Remove(ghost);
-            Destroy(ghost);
+            Debug.Log("Despawning....");
+
+
+            //despawn the ghost that has reached the bottom of the screen
+
+            GameObject invader = spawnedGhostsList[i];
+
+            Debug.Log("invader:" + invader);
+
+            spawnedGhostsList.Remove(invader);
+            Destroy(spawnedGhostsList[i]);
+
+
+
         }
 
+        yield return null;
         yield return null;
     }
 
