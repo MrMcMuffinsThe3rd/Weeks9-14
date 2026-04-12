@@ -146,11 +146,11 @@ public class GhostSpawner : MonoBehaviour
 
             //despawn the ghost that has reached the bottom of the screen
 
-            GameObject invader = spawnedGhostsList[i];
+            GameObject ghost = spawnedGhostsList[i];
 
-            Debug.Log("invader:" + invader);
+            Debug.Log("invader:" + ghost);
 
-            spawnedGhostsList.Remove(invader);
+            spawnedGhostsList.Remove(ghost);
             Destroy(spawnedGhostsList[i]);
 
 
