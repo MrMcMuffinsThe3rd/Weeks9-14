@@ -13,11 +13,20 @@ public class PlayerControllerInput : MonoBehaviour
 
     public Animator playerAnimation;
 
+    public Transform player;
+    Vector2 playerPos;
+    public Transform cursor;
+    Vector2 cursorPos;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        position.y = -2.78f;
+        playerPos = player.transform.position;
+
+        playerPos.y = -2.78f;
         transform.position = position;
+
+        cursorPos = cursor.position;  
     }
 
     // Update is called once per frame
@@ -34,8 +43,8 @@ public class PlayerControllerInput : MonoBehaviour
 
         //to move the gun with the mouse
         movement.x = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>()).x;
-        position.x = movement.x;
-        transform.position = position;
+        playerPos.x = movement.x;
+        transform.position = playerPos;
 
         movement = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());
     }

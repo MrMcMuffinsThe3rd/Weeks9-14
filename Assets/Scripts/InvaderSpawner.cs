@@ -1,6 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Timeline.Actions;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using Random = UnityEngine.Random;
 
 public class InvaderSpawner : MonoBehaviour
 {
@@ -24,12 +28,26 @@ public class InvaderSpawner : MonoBehaviour
     Coroutine DespawnInvadersCoroutine;
     Coroutine moveInvadersCoroutine;
 
+    PlayerControllerInput playerController;
+
+    int i;
+
+    SpriteRenderer invaderSprite;
+
+    bool WasInvaderShot = false;
+    int howManyInvadersShot = 0;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         pleaseStartIndependentInstancesOfCoroutineIBegU();
 
         StartCoroutine(StartSpawningInvaders());
+
+        //i = spawnedInvadersList.Count - 1;
+
+
+
 
     }
 
@@ -49,6 +67,17 @@ public class InvaderSpawner : MonoBehaviour
         //    StopCoroutine(DespawnInvaders()); //stop despawning invaders
         //}
 
+        //Debug.Log("invaderTransform position" + invaderTransform.transform.position);
+
+        if (spawnedInvadersList.Count > 0)
+        {
+            i = spawnedInvadersList.Count - 1;
+
+        }
+        else if (spawnedInvadersList.Count <= 0)
+        {
+            i = spawnedInvadersList.Count;
+        }
     }
 
     public void pleaseStartIndependentInstancesOfCoroutineIBegU()
@@ -63,7 +92,7 @@ public class InvaderSpawner : MonoBehaviour
 
         while (spawnedInvadersList.Count <= 0 || timer > 2)
         {
-            Debug.Log("spawningInvaders running");
+            //Debug.Log("spawningInvaders running");
 
             //generates a spawn point based on invaderTransform
             invaderTransform.position = spawnPoint;
@@ -74,11 +103,12 @@ public class InvaderSpawner : MonoBehaviour
             //spawns invader prefabs at a random x position (y constant) and no rotation
             spawnedInvaders = Instantiate(invaderPrefabs, spawnPoint, Quaternion.identity);
 
+            invaderSprite = spawnedInvaders.GetComponent<SpriteRenderer>();
+
             //adds spawned invaders to a list
             spawnedInvadersList.Add(spawnedInvaders);
 
-            //gets the transform of the spawned invaders and assignes it to invaderTransform variable
-            invaderTransform = spawnedInvaders.GetComponent<Transform>();
+            speed = Random.Range(3f, 5f);
 
             //sets the spawned invader position to invaderTransform variable position
             spawnedInvaders.transform.position = invaderTransform.position;
@@ -88,7 +118,7 @@ public class InvaderSpawner : MonoBehaviour
             yield return new WaitForSeconds(waitTime);
         }
 
-        Debug.Log("spawningInvaders done, moving...");
+        //Debug.Log("spawningInvaders done, moving...");
 
         StartCoroutine(MoveInvader());
 
@@ -103,31 +133,39 @@ public class InvaderSpawner : MonoBehaviour
 
     IEnumerator MoveInvader()
     {
-        t = 0;
 
         while (t < 4 || spawnedInvadersList.Count > 0)
         {
+
             for (int i = spawnedInvadersList.Count - 1; i >= 0; i--)
             {
                 t += Time.deltaTime;
-
-                speed = Random.Range(3f, 5f);
 
                 GameObject moveInvader = spawnedInvadersList[i];
                 Vector2 pos = moveInvader.transform.position;
 
                 //adds speed to y axis of the spawned invader's spawn point to move it downwards
-                pos.y -= speed * Time.deltaTime;
+                pos.y -= speed * t;
 
                 //reassign transform.position to the invader prefab
                 moveInvader.transform.position = pos;
 
                 invaderTransform.position = pos; //to check position of spawned invaders
 
-                StartCoroutine(DespawnInvaders());
+                //Debug.Log("Speed: " + speed);
+
+
 
                 yield return null; //ghosts will take 8 seconds to reach the player before despawning
             }
+
+            t = 0;
+
+            //Debug.Log("left moving loop, entering despawn");
+
+            StartCoroutine(SpawnInvaders());
+
+            //StartCoroutine(DespawnInvaders());
 
             yield return null;
         }
@@ -136,31 +174,71 @@ public class InvaderSpawner : MonoBehaviour
 
     IEnumerator DespawnInvaders()
     {
-        while (invaderTransform.position.y < -6)
+
+        if (invaderTransform.transform.position.y < -6)
         {
             Debug.Log("Despawning....");
 
-            for (int i = spawnedInvadersList.Count - 1; i > 0; i--)
-            {
+            //for (int i = spawnedInvadersList.Count - 1; i >= 0; i--)
+            //{
+            //despawn the invader that has reached the bottom of the screen
+
                 GameObject invader = spawnedInvadersList[i];
-                //despawn the invader that has reached the bottom of the screen
+
+                Debug.Log("invader:" + invader);
+
+                spawnedInvadersList.Remove(invader);
+            Destroy(spawnedInvadersList[i]);
+
+            //    yield return null;
+            //}
+
+           
+
+        }
+
+        yield return null;
+
+        StartCoroutine(SpawnInvaders());
+    }
+
+
+    public void OnPoint(InputAction.CallbackContext context)
+    {
+        //playerController.cursor.transform.localPosition = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());
+
+        //playerController.cursor.transform.position = transform.position;
+
+        Vector2 cursorPos = Camera.main.ScreenToWorldPoint(context.ReadValue<Vector2>());
+
+        float distance = Vector2.Distance(cursorPos, invaderTransform.position);
+
+        if ((distance < 0.1f) || invaderTransform.position.y < -6)
+        {
+           
+                Debug.Log("Despawning....");
+
+            //Debug.Log("playerController.cursor.transform.position: " + playerController.cursor.position);
+            //Debug.Log("invaderSprite");
+
+
+            //for (int i = spawnedInvadersList.Count - 1; i >= 0; i--)
+            //{
+            //despawn the invader that has reached the bottom of the screen
+
+            GameObject invader = spawnedInvadersList[i];
+
+                Debug.Log("invader:" + invader);
+
                 spawnedInvadersList.Remove(invader);
                 Destroy(invader);
 
-                yield return null;
-            }
+                //    yield return null;
+                //}
 
-            yield return null;
 
+
+           
         }
-    }
-
-    IEnumerator MoveAndDespawn()
-    {
-        StartCoroutine(MoveInvader());
-        new WaitForSeconds(waitTime);
-        StartCoroutine(DespawnInvaders());
-
-        yield return null;
     }
 }
